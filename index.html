@@ -23,7 +23,7 @@
     position:relative;
     overflow-x:hidden;
   }
-  /* waveform red+black side-by-side */
+  /* waveform red+black side-by-side — animated + dim gradient */
   .wave-bg{
     position:fixed; inset:0; z-index:-1;
     background:#000;
@@ -32,6 +32,14 @@
   .wave-bg svg{
     position:absolute; inset:0; width:100%; height:100%;
     display:block;
+  }
+  /* soft vignette so edges melt to black even more dimmest */
+  .wave-bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 120% 90% at 50% 50%, transparent 58%, rgba(0,0,0,.42) 92%),
+                linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.35));
+    pointer-events:none;
   }
   .topbar{
     display:flex;
@@ -85,23 +93,83 @@
   .card p{font-size:15px; line-height:1.6; font-weight:500; color: rgba(255,255,255,.92)}
   .dot{width:8px; height:8px; border-radius:50%; background:#00ff88; display:inline-block; margin-right:8px; box-shadow: 0 0 10px rgba(0,255,136,.8); vertical-align:middle}
   .hint{margin-top:12px; font-size:12px; color:rgba(255,255,255,.6)}
+  /* fallback CSS drift if SMIL disabled */
+  @media (prefers-reduced-motion: reduce){
+    .wave-bg svg path animate{ display:none }
+  }
 </style>
 </head>
 <body>
-  <!-- Waveform background: red + black side-by-side with wavy divide -->
+  <!-- Animated waveform: red fades bright → dimmest → dark, side-by-side wavy -->
   <div class="wave-bg" aria-hidden="true">
     <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- bright → low-bright → dimmer → dimmest → dark (no hard edge) -->
+        <linearGradient id="redFade" x1="0%" y1="50%" x2="100%" y2="50%" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color="#ff2b3a" />
+          <stop offset="16%" stop-color="#e6001a" />
+          <stop offset="30%" stop-color="#b40014" />
+          <stop offset="46%" stop-color="#7a0010" />
+          <stop offset="62%" stop-color="#4d000d" />
+          <stop offset="78%" stop-color="#1a0005" />
+          <stop offset="92%" stop-color="#070000" />
+          <stop offset="100%" stop-color="#000000" />
+        </linearGradient>
+        <!-- glow gradient for blurred layer -->
+        <linearGradient id="glowFade" x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" stop-color="rgba(255,42,58,.22)" />
+          <stop offset="40%" stop-color="rgba(140,0,18,.14)" />
+          <stop offset="75%" stop-color="rgba(40,0,6,.06)" />
+          <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+        </linearGradient>
+        <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="14" />
+        </filter>
+        <filter id="softBlur2" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="9" />
+        </filter>
+      </defs>
       <rect width="1000" height="1000" fill="#000000"/>
-      <!-- Red wavy shape on one side — sometimes wider, sometimes narrower -->
-      <path d="M0 0 L 420 0 
-               C 560 160, 280 280, 520 420
-               C 680 560, 320 680, 580 820
-               C 700 920, 420 1000, 480 1000
-               L 0 1000 Z" fill="#7a0010"/>
-      <!-- Soft glow blur -->
-      <path d="M0 0 L 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000 L 0 1000 Z" fill="none" stroke="rgba(255,20,40,.18)" stroke-width="18" style="filter:blur(14px)"/>
-      <!-- Second subtle wave highlight for depth -->
-      <path d="M 420 0 C 520 180, 300 320, 460 480 C 590 640, 380 760, 540 1000" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1.5" stroke-linecap="round"/>
+
+      <!-- Layer 1: main wavy red with dimming gradient — animated morph -->
+      <path fill="url(#redFade)" opacity="1">
+        <animate attributeName="d" dur="7s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+          values="
+            M0 0 L 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000 L 0 1000 Z;
+            M0 0 L 560 0 C 700 140, 380 260, 620 400 C 790 540, 300 660, 640 820 C 760 920, 320 1000, 380 1000 L 0 1000 Z;
+            M0 0 L 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000 L 0 1000 Z
+          "/>
+      </path>
+
+      <!-- Layer 2: soft blurred glow behind wave — slower drift for depth -->
+      <path fill="none" stroke="url(#glowFade)" stroke-width="34" stroke-linecap="round" filter="url(#softBlur)" opacity="0.95">
+        <animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+          values="
+            M 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000;
+            M 560 0 C 700 140, 380 260, 620 400 C 790 540, 300 660, 640 820 C 760 920, 320 1000, 380 1000;
+            M 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000
+          "/>
+      </path>
+
+      <!-- Layer 3: thin white highlight on crest — subtle shimmer, faster -->
+      <path fill="none" stroke="rgba(255,255,255,.065)" stroke-width="1.6" stroke-linecap="round" opacity="0.9">
+        <animate attributeName="d" dur="6.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+          values="
+            M 420 0 C 520 180, 300 320, 460 480 C 590 640, 380 760, 540 1000;
+            M 560 0 C 660 160, 400 300, 560 460 C 700 620, 340 740, 600 1000;
+            M 420 0 C 520 180, 300 320, 460 480 C 590 640, 380 760, 540 1000
+          "/>
+      </path>
+
+      <!-- Layer 4: second faint fill for extra dimness near edge (creates dimmest → dark transition) -->
+      <path fill="url(#redFade)" opacity="0.18" style="mix-blend-mode:soft-light">
+        <animate attributeName="d" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+          values="
+            M0 0 L 460 0 C 580 180, 320 300, 560 440 C 700 580, 360 700, 610 840 C 720 940, 440 1000, 500 1000 L 0 1000 Z;
+            M0 0 L 600 0 C 740 160, 420 280, 660 420 C 820 560, 340 680, 680 840 C 780 940, 360 1000, 420 1000 L 0 1000 Z;
+            M0 0 L 460 0 C 580 180, 320 300, 560 440 C 700 580, 360 700, 610 840 C 720 940, 440 1000, 500 1000 L 0 1000 Z
+          "/>
+      </path>
     </svg>
   </div>
 
