@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects & rewrites
+# keep SPA-friendly routes if you add them later
+/index.html  /  301
+# fallback for unknown paths to home (uncomment if SPA)
+# /*  /index.html  200

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+  "name": "evorez",
+  "type": "javascript",
+  "main": "src/worker.js",
+  "compatibility_date": "2024-11-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./_site",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  },
+  "build": {
+    "command": "node scripts/stage.mjs"
+  },
+  "vars": {
+    // Stopgap: if _site is empty, Worker can proxy the live Vercel site through Cloudflare.
+    // Set PROXY_ORIGIN to "" to disable proxy and serve only local assets.
+    "PROXY_ORIGIN": "https://evorez.vercel.app"
+  },
+  "routes": [
+    { "pattern": "evorez.in/*", "zone_name": "evorez.in" },
+    { "pattern": "www.evorez.in/*", "zone_name": "evorez.in" }
+  ]
+}
