@@ -23,7 +23,7 @@
     position:relative;
     overflow-x:hidden;
   }
-  /* waveform red+black side-by-side — animated + dim gradient */
+  /* water-like waveform + fixed gradient */
   .wave-bg{
     position:fixed; inset:0; z-index:-1;
     background:#000;
@@ -33,12 +33,14 @@
     position:absolute; inset:0; width:100%; height:100%;
     display:block;
   }
-  /* soft vignette so edges melt to black even more dimmest */
+  /* depth vignette + bottom fade for water feel */
   .wave-bg::after{
     content:"";
     position:absolute; inset:0;
-    background: radial-gradient(ellipse 120% 90% at 50% 50%, transparent 58%, rgba(0,0,0,.42) 92%),
-                linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.35));
+    background:
+      radial-gradient(ellipse 130% 85% at 50% 50%, transparent 56%, rgba(0,0,0,.38) 90%),
+      linear-gradient(180deg, rgba(0,0,0,.10) 0%, transparent 22%, rgba(0,0,0,.22) 92%),
+      radial-gradient(ellipse 70% 50% at 18% 50%, rgba(255,20,40,.06), transparent 58%);
     pointer-events:none;
   }
   .topbar{
@@ -93,81 +95,112 @@
   .card p{font-size:15px; line-height:1.6; font-weight:500; color: rgba(255,255,255,.92)}
   .dot{width:8px; height:8px; border-radius:50%; background:#00ff88; display:inline-block; margin-right:8px; box-shadow: 0 0 10px rgba(0,255,136,.8); vertical-align:middle}
   .hint{margin-top:12px; font-size:12px; color:rgba(255,255,255,.6)}
-  /* fallback CSS drift if SMIL disabled */
   @media (prefers-reduced-motion: reduce){
     .wave-bg svg path animate{ display:none }
   }
 </style>
 </head>
 <body>
-  <!-- Animated waveform: red fades bright → dimmest → dark, side-by-side wavy -->
+  <!-- Water-like waves: 4 liquid layers + fixed canvas gradient -->
   <div class="wave-bg" aria-hidden="true">
     <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- bright → low-bright → dimmer → dimmest → dark (no hard edge) -->
-        <linearGradient id="redFade" x1="0%" y1="50%" x2="100%" y2="50%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stop-color="#ff2b3a" />
-          <stop offset="16%" stop-color="#e6001a" />
-          <stop offset="30%" stop-color="#b40014" />
-          <stop offset="46%" stop-color="#7a0010" />
-          <stop offset="62%" stop-color="#4d000d" />
-          <stop offset="78%" stop-color="#1a0005" />
-          <stop offset="92%" stop-color="#070000" />
-          <stop offset="100%" stop-color="#000000" />
+        <!-- FIXED canvas gradient — bright → dimmest → dark, no hard banding -->
+        <linearGradient id="redFade" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#ff3140"/>
+          <stop offset="12%" stop-color="#ea0a1e"/>
+          <stop offset="22%" stop-color="#c30016"/>
+          <stop offset="34%" stop-color="#9d0012"/>
+          <stop offset="48%" stop-color="#6e0010"/>
+          <stop offset="62%" stop-color="#3d000c"/>
+          <stop offset="78%" stop-color="#140006"/>
+          <stop offset="88%" stop-color="#060001"/>
+          <stop offset="100%" stop-color="#000000"/>
         </linearGradient>
-        <!-- glow gradient for blurred layer -->
-        <linearGradient id="glowFade" x1="0%" y1="50%" x2="100%" y2="50%">
-          <stop offset="0%" stop-color="rgba(255,42,58,.22)" />
-          <stop offset="40%" stop-color="rgba(140,0,18,.14)" />
-          <stop offset="75%" stop-color="rgba(40,0,6,.06)" />
-          <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+        <!-- second softer fill for depth (more transparent) -->
+        <linearGradient id="redDeep" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#b00014" stop-opacity="0.55"/>
+          <stop offset="30%" stop-color="#7a0010" stop-opacity="0.38"/>
+          <stop offset="60%" stop-color="#2a0007" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
         </linearGradient>
-        <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="14" />
-        </filter>
-        <filter id="softBlur2" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="9" />
-        </filter>
+        <!-- glow stroke gradient -->
+        <linearGradient id="glowFade" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="rgba(255,40,58,0.20)"/>
+          <stop offset="28%" stop-color="rgba(180,0,18,0.16)"/>
+          <stop offset="55%" stop-color="rgba(90,0,10,0.09)"/>
+          <stop offset="82%" stop-color="rgba(30,0,6,0.04)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </linearGradient>
+        <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="13"/></filter>
+        <filter id="softBlur2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="18"/></filter>
+        <filter id="softBlur3" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="9"/></filter>
       </defs>
-      <rect width="1000" height="1000" fill="#000000"/>
+      <rect width="1000" height="1000" fill="#000"/>
 
-      <!-- Layer 1: main wavy red with dimming gradient — animated morph -->
-      <path fill="url(#redFade)" opacity="1">
-        <animate attributeName="d" dur="7s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+      <!-- Layer 1 — main water body (liquid morph, 7.5s) -->
+      <path fill="url(#redFade)" opacity="0.98">
+        <animate attributeName="d" dur="7.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1" keyTimes="0;0.33;0.66;1"
           values="
-            M0 0 L 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000 L 0 1000 Z;
-            M0 0 L 560 0 C 700 140, 380 260, 620 400 C 790 540, 300 660, 640 820 C 760 920, 320 1000, 380 1000 L 0 1000 Z;
-            M0 0 L 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000 L 0 1000 Z
+            M0 0 L 432 0 C 560 108, 318 192, 522 312 C 682 428, 308 528, 562 648 C 682 748, 338 832, 582 918 C 652 972, 418 1000, 476 1000 L0 1000 Z;
+            M0 0 L 508 0 C 638 126, 382 212, 598 332 C 752 452, 352 552, 636 670 C 742 768, 382 852, 658 934 C 702 976, 362 1000, 402 1000 L0 1000 Z;
+            M0 0 L 384 0 C 502 102, 282 182, 478 302 C 622 418, 272 518, 506 638 C 618 738, 302 822, 542 910 C 588 962, 376 1000, 442 1000 L0 1000 Z;
+            M0 0 L 432 0 C 560 108, 318 192, 522 312 C 682 428, 308 528, 562 648 C 682 748, 338 832, 582 918 C 652 972, 418 1000, 476 1000 L0 1000 Z
           "/>
       </path>
 
-      <!-- Layer 2: soft blurred glow behind wave — slower drift for depth -->
-      <path fill="none" stroke="url(#glowFade)" stroke-width="34" stroke-linecap="round" filter="url(#softBlur)" opacity="0.95">
-        <animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+      <!-- Layer 2 — second water sheet offset 38px for parallax (9.2s, opposite phase) -->
+      <path fill="url(#redDeep)" opacity="1">
+        <animate attributeName="d" dur="9.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1" keyTimes="0;0.33;0.66;1"
           values="
-            M 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000;
-            M 560 0 C 700 140, 380 260, 620 400 C 790 540, 300 660, 640 820 C 760 920, 320 1000, 380 1000;
-            M 420 0 C 560 160, 280 280, 520 420 C 680 560, 320 680, 580 820 C 700 920, 420 1000, 480 1000
+            M0 0 L 468 0 C 592 118, 354 202, 558 322 C 718 442, 344 542, 598 662 C 714 762, 372 846, 618 932 C 682 980, 452 1000, 512 1000 L0 1000 Z;
+            M0 0 L 542 0 C 668 138, 418 226, 632 346 C 786 466, 386 566, 672 684 C 774 784, 416 864, 692 948 C 732 984, 398 1000, 438 1000 L0 1000 Z;
+            M0 0 L 412 0 C 534 112, 314 192, 512 314 C 654 432, 306 532, 542 652 C 652 752, 336 836, 574 924 C 618 970, 408 1000, 472 1000 L0 1000 Z;
+            M0 0 L 468 0 C 592 118, 354 202, 558 322 C 718 442, 344 542, 598 662 C 714 762, 372 846, 618 932 C 682 980, 452 1000, 512 1000 L0 1000 Z
           "/>
       </path>
 
-      <!-- Layer 3: thin white highlight on crest — subtle shimmer, faster -->
-      <path fill="none" stroke="rgba(255,255,255,.065)" stroke-width="1.6" stroke-linecap="round" opacity="0.9">
-        <animate attributeName="d" dur="6.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+      <!-- Layer 3 — glow edge like water surface light scatter (8.4s) -->
+      <path fill="none" stroke="url(#glowFade)" stroke-width="30" stroke-linecap="round" filter="url(#softBlur)" opacity="0.95">
+        <animate attributeName="d" dur="8.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1" keyTimes="0;0.33;0.66;1"
           values="
-            M 420 0 C 520 180, 300 320, 460 480 C 590 640, 380 760, 540 1000;
-            M 560 0 C 660 160, 400 300, 560 460 C 700 620, 340 740, 600 1000;
-            M 420 0 C 520 180, 300 320, 460 480 C 590 640, 380 760, 540 1000
+            M 432 0 C 560 108, 318 192, 522 312 C 682 428, 308 528, 562 648 C 682 748, 338 832, 582 918 C 652 972, 418 1000, 476 1000;
+            M 508 0 C 638 126, 382 212, 598 332 C 752 452, 352 552, 636 670 C 742 768, 382 852, 658 934 C 702 976, 362 1000, 402 1000;
+            M 384 0 C 502 102, 282 182, 478 302 C 622 418, 272 518, 506 638 C 618 738, 302 822, 542 910 C 588 962, 376 1000, 442 1000;
+            M 432 0 C 560 108, 318 192, 522 312 C 682 428, 308 528, 562 648 C 682 748, 338 832, 582 918 C 652 972, 418 1000, 476 1000
           "/>
       </path>
 
-      <!-- Layer 4: second faint fill for extra dimness near edge (creates dimmest → dark transition) -->
-      <path fill="url(#redFade)" opacity="0.18" style="mix-blend-mode:soft-light">
-        <animate attributeName="d" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" keyTimes="0;0.5;1"
+      <!-- Layer 4 — second faint glow deeper (10s, very slow) -->
+      <path fill="none" stroke="rgba(255,34,50,0.10)" stroke-width="42" stroke-linecap="round" filter="url(#softBlur2)" opacity="0.5">
+        <animate attributeName="d" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1" keyTimes="0;0.33;0.66;1"
           values="
-            M0 0 L 460 0 C 580 180, 320 300, 560 440 C 700 580, 360 700, 610 840 C 720 940, 440 1000, 500 1000 L 0 1000 Z;
-            M0 0 L 600 0 C 740 160, 420 280, 660 420 C 820 560, 340 680, 680 840 C 780 940, 360 1000, 420 1000 L 0 1000 Z;
-            M0 0 L 460 0 C 580 180, 320 300, 560 440 C 700 580, 360 700, 610 840 C 720 940, 440 1000, 500 1000 L 0 1000 Z
+            M 468 0 C 592 118, 354 202, 558 322 C 718 442, 344 542, 598 662 C 714 762, 372 846, 618 932;
+            M 542 0 C 668 138, 418 226, 632 346 C 786 466, 386 566, 672 684 C 774 784, 416 864, 692 948;
+            M 412 0 C 534 112, 314 192, 512 314 C 654 432, 306 532, 542 652 C 652 752, 336 836, 574 924;
+            M 468 0 C 592 118, 354 202, 558 322 C 718 442, 344 542, 598 662 C 714 762, 372 846, 618 932
+          "/>
+      </path>
+
+      <!-- Layer 5 — water crest highlight (thin shimmer, 6s fastest) -->
+      <path fill="none" stroke="rgba(255,255,255,0.072)" stroke-width="1.45" stroke-linecap="round">
+        <animate attributeName="d" dur="6s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1" keyTimes="0;0.33;0.66;1"
+          values="
+            M 432 0 C 518 116, 332 206, 498 328 C 598 444, 352 548, 548 664 C 624 756, 368 840, 566 1000;
+            M 508 0 C 598 132, 396 224, 574 348 C 674 462, 394 568, 622 682 C 698 774, 412 858, 642 1000;
+            M 384 0 C 472 108, 296 194, 452 318 C 542 432, 316 536, 492 654 C 568 746, 332 830, 526 1000;
+            M 432 0 C 518 116, 332 206, 498 328 C 598 444, 352 548, 548 664 C 624 756, 368 840, 566 1000
+          "/>
+      </path>
+
+      <!-- Layer 6 — second highlight subtle (7.1s) -->
+      <path fill="none" stroke="rgba(255,220,225,0.045)" stroke-width="1" stroke-linecap="round" filter="url(#softBlur3)" opacity="0.9">
+        <animate attributeName="d" dur="7.1s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1" keyTimes="0;0.33;0.66;1"
+          values="
+            M 468 0 C 556 126, 368 218, 534 338 C 632 454, 386 562, 584 678 C 658 770, 402 852, 602 1000;
+            M 542 0 C 632 144, 432 238, 608 358 C 706 474, 428 578, 656 696 C 732 788, 448 868, 678 1000;
+            M 412 0 C 500 116, 328 206, 488 328 C 578 444, 350 550, 528 668 C 602 760, 366 842, 562 1000;
+            M 468 0 C 556 126, 368 218, 534 338 C 632 454, 386 562, 584 678 C 658 770, 402 852, 602 1000
           "/>
       </path>
     </svg>
