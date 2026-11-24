@@ -2,55 +2,386 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#000000">
-<title>EVOREZ</title>
-<meta name="description" content="EVOREZ - student developer building Android tools and privacy-first software.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0000">
+<title>EVOREZ — ForBazila • MeeTube</title>
+<meta name="description" content="Evorez — dark romantic UI, MeeTube library, ForBazila message.">
 <meta property="og:title" content="EVOREZ">
-<meta property="og:description" content="Student developer building Android tools and privacy-first software.">
 <meta property="og:url" content="https://evorez.in">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22none%22 stroke=%22%23ff453a%22 stroke-width=%2210%22/><text x=%2250%22 y=%2269%22 font-size=%2255%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23ff453a%22 font-family=%22sans-serif%22>E</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22none%22 stroke=%22%23ff1a2b%22 stroke-width=%2210%22/><text x=%2250%22 y=%2268%22 font-size=%2250%22 text-anchor=%22middle%22 fill=%22%23ff1a2b%22 font-weight=%22800%22>E</text></svg>">
 <style>
-  :root { --bg:#000; --card:#111; --text:#f2f2f2; --muted:#8e8e93; --accent:#ff453a; }
-  * { box-sizing:border-box; margin:0; }
-  body { background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; line-height:1.6; padding:24px; max-width:640px; margin:0 auto; }
-  h1 { font-size:2rem; margin-top:48px; }
-  h2 { font-size:.85rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin:40px 0 12px; }
-  .tag { color:var(--muted); margin-top:8px; }
-  .card { background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; }
-  .card h3 { font-size:1rem; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .card p { color:var(--muted); font-size:.9rem; margin-top:4px; }
-  .badge { font-size:.7rem; color:var(--muted); border:1px solid #333; border-radius:99px; padding:2px 10px; font-weight:400; }
-  .links a { display:inline-block; margin-right:16px; }
-  a { color:var(--accent); text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  footer { color:var(--muted); font-size:.8rem; margin:48px 0 24px; }
+  :root{
+    --bg:#050000;
+    --bg2:#0f0202;
+    --card:#141010;
+    --card2:#1a0e0e;
+    --card3:#1f0f0f;
+    --line:#2a1515;
+    --line2:#3a1a1a;
+    --text:#fff;
+    --muted:#a88;
+    --dim:#7a6a6a;
+    --accent:#ff1a2b;
+    --accent2:#ff3b4a;
+    --accent-soft:rgba(255,26,43,.14);
+    --radius:22px;
+    --pill:999px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background: var(--bg);
+    color:var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* background */
+  .bg{
+    position:fixed; inset:0; z-index:-3;
+    background:
+      radial-gradient(1200px 800px at 50% -10%, rgba(120,10,15,.55), transparent 60%),
+      radial-gradient(900px 700px at 50% 45%, rgba(90,8,12,.32), transparent 65%),
+      linear-gradient(180deg, #0a0000 0%, #000 70%);
+  }
+  .hearts{
+    position:fixed; inset:0; z-index:-2; pointer-events:none; overflow:hidden;
+  }
+  .hearts i{
+    position:absolute; color:rgba(255,26,43,.55); font-style:normal; font-size:14px;
+    animation: float linear infinite;
+    text-shadow: 0 0 10px rgba(255,26,43,.6);
+  }
+  @keyframes float{
+    0%{ transform: translateY(110vh) rotate(0deg) scale(.8); opacity:0}
+    10%{opacity:.9}
+    90%{opacity:.9}
+    100%{ transform: translateY(-10vh) rotate(20deg) scale(1.1); opacity:0}
+  }
+  .glow{
+    position:fixed; width:700px; height:700px; left:50%; top:30%; transform:translate(-50%,-30%);
+    background: radial-gradient(circle, rgba(255,26,43,.09), transparent 70%);
+    filter:blur(30px); z-index:-1; pointer-events:none;
+  }
+  .wrap{max-width:480px; margin:0 auto; padding:14px 14px 90px; position:relative}
+  /* top bar */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:6px 0 8px;
+    position:sticky; top:0; z-index:20;
+    backdrop-filter: blur(16px);
+    background: linear-gradient(180deg, rgba(10,0,0,.85), rgba(5,0,0,0));
+  }
+  .brand{
+    display:flex; align-items:center; gap:8px;
+    padding:8px 14px; border-radius: var(--pill);
+    background: rgba(20,10,10,.9); border:1px solid var(--line);
+    font-weight:800; font-size:14px; letter-spacing:.02em;
+  }
+  .brand b{color:var(--accent)}
+  .cast{
+    width:44px; height:44px; border-radius:50%; display:grid; place-items:center;
+    background: rgba(20,10,10,.9); border:1px solid var(--line); color:#fff; cursor:pointer;
+  }
+  /* profile */
+  .profile{
+    display:flex; align-items:center; gap:14px; padding:6px 4px 12px;
+  }
+  .avatar{
+    width:82px; height:82px; border-radius:50%; padding:3px;
+    background: linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,26,43,.3));
+    flex-shrink:0;
+    box-shadow: 0 8px 30px rgba(0,0,0,.5);
+  }
+  .avatar img{
+    width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;
+    border:2px solid rgba(255,255,255,.06);
+  }
+  .pinfo h1{font-size:26px; font-weight:900; letter-spacing:-.02em; display:flex; gap:6px; align-items:center}
+  .pinfo h1 i{font-style:normal; font-size:22px; filter: drop-shadow(0 0 6px rgba(255,255,255,.4))}
+  .pinfo p{color:var(--muted); font-size:13px; margin-top:2px; word-break:break-all}
+  .actions{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:4px 0 18px;
+  }
+  .pill-btn{
+    padding:13px 14px; border-radius: var(--pill); text-align:center; font-weight:700; font-size:14px;
+    background: rgba(28,12,12,.95); border:1px solid var(--line); color:#fff; cursor:pointer;
+    backdrop-filter: blur(10px);
+  }
+  .pill-btn:hover{border-color:var(--line2)}
+  /* section */
+  .section{margin-top:18px}
+  .section-head{
+    display:flex; align-items:center; justify-content:space-between; padding:0 4px 10px;
+  }
+  .section-head h2{font-size:20px; font-weight:900; letter-spacing:-.02em; display:flex; gap:8px; align-items:center}
+  .section-head h2 span{font-size:18px; opacity:.9}
+  .card{
+    background: linear-gradient(180deg, var(--card2), var(--card));
+    border:1px solid var(--line); border-radius: var(--radius);
+    overflow:hidden;
+  }
+  .update{
+    display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer;
+  }
+  .update .ic{
+    width:36px; height:36px; border-radius:10px; display:grid; place-items:center;
+    background: var(--card3); border:1px solid var(--line); flex-shrink:0;
+  }
+  .update b{font-size:14px}
+  .update p{font-size:13px; color:var(--muted)}
+  /* library */
+  .library{
+    padding:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  }
+  .lib{
+    background: rgba(20,12,12,.9); border:1px solid rgba(255,255,255,.06);
+    border-radius:18px; padding:16px 10px; text-align:center; cursor:pointer;
+    transition:.15s;
+  }
+  .lib:hover{transform:translateY(-1px); border-color:var(--line2)}
+  .lib .ico{font-size:22px; margin-bottom:8px; display:block}
+  .lib span{font-size:12px; font-weight:600; color:#e8d0d0}
+  /* explore */
+  .explore-empty{
+    padding:14px; text-align:center; color:var(--muted); font-size:13px;
+  }
+  /* forbazila hero */
+  .bazila-nav{
+    display:flex; gap:8px; align-items:center; justify-content:space-between;
+    padding:8px 6px; margin-top:6px;
+  }
+  .bazila-pill{
+    padding:7px 12px; border-radius:var(--pill); background: rgba(255,26,43,.15); border:1px solid rgba(255,26,43,.35);
+    color:var(--accent); font-weight:800; font-size:11px; letter-spacing:.08em;
+  }
+  .tabs{display:flex; gap:14px; font-size:13px; color:var(--muted)}
+  .tabs b{color:#fff; border-bottom:2px solid var(--accent); padding-bottom:3px}
+  .toggle{
+    width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
+    background: rgba(255,255,255,.06); border:1px solid var(--line); cursor:pointer;
+  }
+  .hero{
+    text-align:center; padding:24px 16px 10px;
+  }
+  .hero-avatar{
+    width:168px; height:168px; margin:0 auto; border-radius:50%; padding:4px;
+    background: linear-gradient(180deg, var(--accent), #7a0010);
+    box-shadow: 0 16px 40px rgba(255,26,43,.35), 0 0 0 8px rgba(255,26,43,.08);
+  }
+  .hero-avatar img{width:100%; height:100%; border-radius:50%; object-fit:cover; border:3px solid rgba(0,0,0,.4); display:block}
+  .hero h2{margin-top:18px; font-size:32px; font-weight:900; letter-spacing:-.03em}
+  .hero h2 i{font-style:normal; color:var(--accent)}
+  .hero p{color:var(--muted); font-size:14px; line-height:1.6; max-width:340px; margin:8px auto 0}
+  .hero p.small{font-size:12px; opacity:.9}
+  .cta{
+    display:flex; gap:10px; justify-content:center; margin:18px auto 8px; flex-wrap:wrap;
+  }
+  .btn{
+    padding:12px 18px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; border:1px solid transparent;
+  }
+  .btn.primary{background: var(--accent); color:#fff; box-shadow: 0 8px 20px rgba(255,26,43,.35)}
+  .btn.ghost{background: rgba(20,12,12,.9); color:#fff; border-color:var(--line)}
+  .card-dark{
+    margin:18px 8px 0; padding:18px; border-radius:20px;
+    background: linear-gradient(180deg, rgba(60,10,15,.55), rgba(20,8,8,.95));
+    border:1px solid rgba(255,26,43,.22);
+    backdrop-filter: blur(12px);
+    text-align:left;
+  }
+  .card-dark h3{font-size:18px; text-align:center; margin-bottom:12px}
+  .card-dark p{font-size:13px; line-height:1.7; color:var(--muted); text-align:left}
+  .card-dark p + p{margin-top:10px}
+  .sign{ text-align:right; font-size:13px; color:var(--muted); margin-top:12px; border-top:1px solid rgba(255,255,255,.06); padding-top:10px}
+  .about-card{
+    margin:14px 8px 0; padding:16px; border-radius:16px;
+    background: rgba(60,10,15,.7); border:1px solid rgba(255,26,43,.25); text-align:center;
+  }
+  .about-card p{color:#ffd0d3; font-size:13px; line-height:1.5}
+  /* bottom nav */
+  .dock{
+    position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
+    width:min(92vw, 460px); display:flex; align-items:center; justify-content:space-around;
+    padding:8px 10px; border-radius:28px;
+    background: rgba(15,5,5,.92); border:1px solid var(--line);
+    backdrop-filter: blur(18px); box-shadow: 0 12px 40px rgba(0,0,0,.6);
+    z-index:30;
+  }
+  .dock a{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:6px 4px; border-radius:16px; color:var(--muted); text-decoration:none; font-size:11px; font-weight:600;
+  }
+  .dock a.active{ background: rgba(255,26,43,.14); color:#fff; }
+  .dock a.active i{ color: var(--accent)}
+  .dock i{font-size:18px; font-style:normal}
+  .dock .you{ background: var(--accent); color:#fff !important; border-radius:20px; padding:8px 14px}
+  .dock .you i{color:#fff}
+  /* small helpers */
+  .sep{height:1px; background: var(--line); margin:14px 0}
+  .hidden{display:none}
+  @media(min-width:600px){
+    .wrap{max-width:560px}
+    .hero-avatar{width:190px;height:190px}
+  }
 </style>
 </head>
 <body>
-  <h1>EVOREZ</h1>
-  <p class="tag">Student developer building Android tools and privacy-first software.</p>
+<div class="bg"></div>
+<div class="glow"></div>
+<div class="hearts" id="hearts"></div>
 
-  <h2>Projects</h2>
-  <div class="card">
-    <h3>Evo Browser <span class="badge">In development</span></h3>
-    <p>Android browser with built-in ad and tracker blocking.</p>
-  </div>
-  <div class="card">
-    <h3>More <span class="badge">Soon</span></h3>
-    <p>New tools and experiments from EVOREZ LABS.</p>
+<div class="wrap">
+  <!-- Top MeeTube bar -->
+  <div class="topbar">
+    <div class="brand"><b>●</b> MeeTube</div>
+    <button class="cast" aria-label="cast">◧</button>
   </div>
 
-  <h2>About</h2>
-  <p>I'm a student from India learning by building: Android, Python, and open-source tools. I share what I make here.</p>
+  <!-- Profile header like MeeTube -->
+  <div class="profile">
+    <div class="avatar">
+      <img src="https://i.pravatar.cc/200?img=12" alt="Evorez avatar">
+    </div>
+    <div class="pinfo">
+      <h1>Evorez <i>🪽</i></h1>
+      <p>sheikhfaheem812@gmail.com</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="pill-btn">Accounts</button>
+    <button class="pill-btn">Settings</button>
+  </div>
 
-  <h2>Contact</h2>
-  <p class="links">
-    <a href="mailto:evorez.in@gmail.com">Email</a>
-    <a href="https://github.com/evorez" rel="noopener">GitHub</a>
-    <a href="https://t.me/evorez" rel="noopener">Telegram</a>
-  </p>
+  <!-- History -->
+  <div class="section">
+    <div class="section-head">
+      <h2>History <span>›</span></h2>
+    </div>
+    <div class="card">
+      <div class="update" onclick="toast('Downloading MeeTube 3.5.2…')">
+        <div class="ic">⇩</div>
+        <div>
+          <b>Update available</b>
+          <p>MeeTube 3.5.2</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <footer>© EVOREZ</footer>
+  <!-- Library grid like first screenshot -->
+  <div class="section">
+    <div class="section-head"><h2>Library</h2></div>
+    <div class="card">
+      <div class="library">
+        <div class="lib" onclick="toast('Subscriptions')"><span class="ico">▭</span><span>Subscriptions</span></div>
+        <div class="lib" onclick="toast('Downloads')"><span class="ico">⬇</span><span>Downloads</span></div>
+        <div class="lib" onclick="toast('Watch later')"><span class="ico">◷</span><span>Watch later</span></div>
+        <div class="lib" onclick="toast('Liked videos')"><span class="ico">♡</span><span>Liked videos</span></div>
+        <div class="lib" onclick="toast('Playlists')"><span class="ico">▤</span><span>Playlists</span></div>
+        <div class="lib" onclick="toast('My videos')"><span class="ico">▶</span><span>My videos</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Explore -->
+  <div class="section">
+    <div class="section-head"><h2>Explore</h2></div>
+    <div class="card explore-empty">Coming soon — your recommendations will live here.</div>
+  </div>
+
+  <!-- ForBazila style hero -->
+  <div class="bazila-nav">
+    <div class="bazila-pill">BAZILA</div>
+    <div class="tabs"><span>Message</span><span>Me</span><span>You</span><b>Question</b></div>
+    <button class="toggle" onclick="toggleTheme()">◐</button>
+  </div>
+
+  <div class="hero" id="top">
+    <div class="hero-avatar">
+      <img src="https://i.pravatar.cc/400?img=5" alt="Bazila">
+    </div>
+    <h2>Hi <i>Bazila</i></h2>
+    <p class="small">♥</p>
+    <p>A short, honest message. No pressure — read it whenever you like.</p>
+    <p class="small">♥</p>
+    <div class="cta">
+      <button class="btn primary" onclick="openMessage()">Read it</button>
+      <button class="btn ghost" onclick="openQuestion()">The question</button>
+    </div>
+    <p class="small">♥</p>
+  </div>
+
+  <!-- Message card like third screenshot -->
+  <div class="card-dark" id="message">
+    <h3>A few honest words</h3>
+    <p>Hi Bazila,</p>
+    <p>I've been wanting to tell you this for a while.</p>
+    <p>I really enjoy talking to you. You're smart, kind, and easy to be around — and somewhere along the way, I started liking you.</p>
+    <p>I'm not asking for anything big right now. I just want to be honest and start from somewhere real — as friends, for now. No labels, no rush.</p>
+    <p>Whatever you decide, I'll respect it.</p>
+    <div class="sign">— Take care</div>
+  </div>
+
+  <div class="about-card">
+    <div style="font-size:11px; letter-spacing:.12em; color:var(--muted); margin-bottom:6px">ABOUT ME</div>
+    <h3 style="font-size:18px; margin-bottom:8px">A little about me</h3>
+    <p>My response depends on yours — your answer decides what I share about myself, Hehee.</p>
+  </div>
+
+  <div class="sep"></div>
+  <p style="text-align:center; color:var(--muted); font-size:12px; padding-bottom:20px">© EVOREZ • evorez.in • Built with ♥</p>
+</div>
+
+<!-- Bottom dock like MeeTube -->
+<nav class="dock" aria-label="navigation">
+  <a href="#top"><i>⌂</i> Home</a>
+  <a href="#"><i>◫</i> Shorts</a>
+  <a href="#"><i>⌕</i> Search</a>
+  <a href="#"><i>⬇</i> Downloads</a>
+  <a class="you active" href="#"><i>●</i> You</a>
+</nav>
+
+<div id="toast" style="position:fixed; left:50%; bottom:78px; transform:translateX(-50%); background:#1a0a0a; color:#fff; border:1px solid var(--line); padding:10px 14px; border-radius:999px; font-size:13px; display:none; z-index:40"></div>
+
+<script>
+  // floating hearts
+  const hearts = document.getElementById('hearts');
+  const symbols = ['♥','♡','❤','♥'];
+  function spawn(){
+    const el = document.createElement('i');
+    el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.fontSize = (10 + Math.random()*14) + 'px';
+    el.style.animationDuration = (8 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*2) + 's';
+    hearts.appendChild(el);
+    setTimeout(()=> el.remove(), 18000);
+  }
+  setInterval(spawn, 320);
+  for(let i=0;i<10;i++) setTimeout(spawn, i*200);
+
+  function toast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.style.display='block';
+    clearTimeout(t._t); t._t=setTimeout(()=> t.style.display='none', 1800);
+  }
+  function openMessage(){
+    document.getElementById('message').scrollIntoView({behavior:'smooth', block:'center'});
+    toast('Opening message…');
+  }
+  function openQuestion(){
+    toast('Question: Will you be my friend? ♥');
+  }
+  function toggleTheme(){
+    document.body.style.filter = document.body.style.filter ? '' : 'brightness(1.08)';
+    toast('Theme toggled');
+  }
+  // Add subtle parallax on scroll
+  let lastY=0;
+  addEventListener('scroll', ()=>{
+    const y = scrollY*0.06;
+    document.querySelector('.glow').style.transform = `translate(-50%, calc(-30% + ${y}px))`;
+  }, {passive:true});
+</script>
 </body>
 </html>
