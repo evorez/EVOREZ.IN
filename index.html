@@ -1,27 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Evorez — coming soon</title>
-<meta name="description" content="Evorez — coming soon.">
-<link rel="canonical" href="https://evorez.in/">
-<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>EVOREZ</title>
+<meta name="description" content="EVOREZ - student developer building Android tools and privacy-first software.">
+<meta property="og:title" content="EVOREZ">
+<meta property="og:description" content="Student developer building Android tools and privacy-first software.">
+<meta property="og:url" content="https://evorez.in">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22none%22 stroke=%22%23ff453a%22 stroke-width=%2210%22/><text x=%2250%22 y=%2269%22 font-size=%2255%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23ff453a%22 font-family=%22sans-serif%22>E</text></svg>">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{display:grid;place-items:center;background:#070a07;color:#d6e8d6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:center;padding:24px}
-  h1{font-size:28px;letter-spacing:-.02em}
-  p{color:#8fa08f;margin-top:10px;font-size:14px}
-  a{color:#00ff88;text-decoration:none;border-bottom:1px dashed rgba(0,255,136,.3)}
-  a:hover{color:#fff}
+  :root { --bg:#000; --card:#111; --text:#f2f2f2; --muted:#8e8e93; --accent:#ff453a; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; line-height:1.6; padding:24px; max-width:640px; margin:0 auto; }
+  h1 { font-size:2rem; margin-top:48px; }
+  h2 { font-size:.85rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin:40px 0 12px; }
+  .tag { color:var(--muted); margin-top:8px; }
+  .card { background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; }
+  .card h3 { font-size:1rem; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .card p { color:var(--muted); font-size:.9rem; margin-top:4px; }
+  .badge { font-size:.7rem; color:var(--muted); border:1px solid #333; border-radius:99px; padding:2px 10px; font-weight:400; }
+  .links a { display:inline-block; margin-right:16px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  footer { color:var(--muted); font-size:.8rem; margin:48px 0 24px; }
 </style>
 </head>
 <body>
-  <main>
-    <h1>coming soon</h1>
-    <p>evorez.in is being cleared — fresh start.</p>
-    <p><a href="https://github.com/evorez/EVOREZ.IN">github.com/evorez/EVOREZ.IN</a></p>
-  </main>
+  <h1>EVOREZ</h1>
+  <p class="tag">Student developer building Android tools and privacy-first software.</p>
+
+  <h2>Projects</h2>
+  <div class="card">
+    <h3>Evo Browser <span class="badge">In development</span></h3>
+    <p>Android browser with built-in ad and tracker blocking.</p>
+  </div>
+  <div class="card">
+    <h3>More <span class="badge">Soon</span></h3>
+    <p>New tools and experiments from EVOREZ LABS.</p>
+  </div>
+
+  <h2>About</h2>
+  <p>I'm a student from India learning by building: Android, Python, and open-source tools. I share what I make here.</p>
+
+  <h2>Contact</h2>
+  <p class="links">
+    <a href="mailto:evorez.in@gmail.com">Email</a>
+    <a href="https://github.com/evorez" rel="noopener">GitHub</a>
+    <a href="https://t.me/evorez" rel="noopener">Telegram</a>
+  </p>
+
+  <footer>© EVOREZ</footer>
 </body>
 </html>
